@@ -7,16 +7,11 @@ int main() {
     std::cout << "document_root = " << server_config.document_root << std::endl <<
               "cpu_limit = " << server_config.cpu_limit << std::endl;
 
-    try
-    {
-        boost::asio::io_service io_service;
-
-        server s(io_service, 80);
-
-        io_service.run();
+    try {
+        Server s(server_config);
+        s.run();
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 

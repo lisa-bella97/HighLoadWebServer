@@ -3,10 +3,11 @@
 #include <sstream>
 #include "ServerConfigParser.h"
 
-int ServerConfigParser::cpu_limit = std::thread::hardware_concurrency();
+unsigned int ServerConfigParser::cpu_limit = std::thread::hardware_concurrency();
 std::string ServerConfigParser::document_root = "/var/www/html";
+unsigned int ServerConfigParser::port = 80;
 
-config ServerConfigParser::parse(const std::string &path) {
+ServerConfig ServerConfigParser::parse(const std::string &path) {
     std::ifstream config_file(path);
     if (!config_file.is_open()) {
         throw std::runtime_error("cannot open config file");
@@ -15,17 +16,17 @@ config ServerConfigParser::parse(const std::string &path) {
     std::string line;
     while (std::getline(config_file, line)) {
         std::istringstream line_stream(line);
-        std::string arg_name, arg_val;
-        line_stream >> arg_name >> arg_val;
+        std::string key, value;
+        line_stream >> key >> value;
 
-        if (arg_name == "cpu_limit") {
-            cpu_limit = std::atoi(arg_val.c_str());
-        } else if (arg_name == "document_root") {
-            document_root = arg_val;
+        if (key == "cpu_limit") {
+            cpu_limit = std::atoi(value.c_str());
+        } else if (key == "document_root") {
+            document_root = value;
         }
     }
 
     config_file.close();
 
-    return config{cpu_limit, document_root};
+    return ServerConfig{cpu_limit, document_root, port};
 }

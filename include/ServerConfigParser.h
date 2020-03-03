@@ -4,18 +4,20 @@
 
 #include <string>
 
-struct config {
-    int cpu_limit;
+struct ServerConfig {
+    unsigned int cpu_limit;
     std::string document_root;
+    unsigned int port;
 };
 
 class ServerConfigParser {
 public:
-    static config parse(const std::string &path);
+    static ServerConfig parse(const std::string &path);
 
 private:
-    static int cpu_limit;
+    static unsigned int cpu_limit;
     static std::string document_root;
+    static unsigned int port;
 };
 
 
