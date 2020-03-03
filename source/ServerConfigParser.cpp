@@ -3,9 +3,9 @@
 #include <sstream>
 #include "ServerConfigParser.h"
 
-unsigned int ServerConfigParser::cpu_limit = std::thread::hardware_concurrency();
-std::string ServerConfigParser::document_root = "/var/www/html";
-unsigned int ServerConfigParser::port = 80;
+unsigned int ServerConfigParser::cpu_limit_ = std::thread::hardware_concurrency();
+std::string ServerConfigParser::document_root_ = "/var/www/html";
+unsigned int ServerConfigParser::port_ = 80;
 
 ServerConfig ServerConfigParser::parse(const std::string &path) {
     std::ifstream config_file(path);
@@ -20,13 +20,17 @@ ServerConfig ServerConfigParser::parse(const std::string &path) {
         line_stream >> key >> value;
 
         if (key == "cpu_limit") {
-            cpu_limit = std::atoi(value.c_str());
+            cpu_limit_ = std::atoi(value.c_str());
         } else if (key == "document_root") {
-            document_root = value;
+            document_root_ = value;
         }
     }
 
     config_file.close();
 
-    return ServerConfig{cpu_limit, document_root, port};
+    return ServerConfig{cpu_limit_, document_root_, port_};
+}
+
+void ServerConfigParser::setPort(unsigned int port) {
+    port_ = port;
 }

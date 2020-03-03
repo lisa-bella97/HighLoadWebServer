@@ -13,11 +13,12 @@ struct ServerConfig {
 class ServerConfigParser {
 public:
     static ServerConfig parse(const std::string &path);
+    static void setPort(unsigned int port);
 
 private:
-    static unsigned int cpu_limit;
-    static std::string document_root;
-    static unsigned int port;
+    static unsigned int cpu_limit_;
+    static std::string document_root_;
+    static unsigned int port_;
 };
 
 

@@ -1,14 +1,99 @@
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+#include <iostream>
+#include <memory>
+
 #include "Server.h"
 
-Server::Server(const ServerConfig &config) : signal_(io_service_, SIGCHLD),
+
+/*Server::Server(const ServerConfig &config) : signal_(io_service_, SIGCHLD),
                                              acceptor_(io_service_, tcp::endpoint(tcp::v4(), config.port)),
-                                             socket_(io_service_) {
+                                             socket_(io_service_),
+                                             document_root_(config.document_root),
+                                             cpu_limit_(config.cpu_limit) {
+    acceptor_.set_option(tcp::acceptor::reuse_address(true));
+    acceptor_.listen();
+
+    serverListen();
+
     start_signal_wait();
     start_accept();
 }
 
+Server::~Server() {
+    acceptor_.cancel();
+    acceptor_.close();
+}
+
 void Server::run() {
     io_service_.run();
+}
+
+void Server::serverListen() {
+    data_ = boost::array<char, 1024>();
+    acceptor_.async_accept(
+            socket_,
+            boost::bind(&Server::listenHandler,
+                        this,
+                        boost::asio::placeholders::error
+            )
+    );
+}
+
+void Server::listenHandler(boost::system::error_code error) {
+    if (!error) {
+        startProcessing();
+    } else {
+        std::cout << "Failed to accept new connection: " << error.message() << " " << error.value() << std::endl;
+    }
+
+    serverListen(); // not a recursion!
+}
+
+void Server::startProcessing() {
+    socket_.async_read_some(
+            boost::asio::buffer(data_),
+            boost::bind(
+                    &Server::readHandler,
+                    shared_from_this(),
+                    boost::asio::placeholders::error,
+                    boost::asio::placeholders::bytes_transferred
+            ));
+}
+
+void Server::readHandler(boost::system::error_code error, unsigned int bytes_transferred) {
+    if (error) {
+        if (bytes_transferred == 0) {
+            return;
+        }
+        std::cout << error.message() << " || " << error.value() << " || " << std::endl;
+        return;
+    } else {
+        std::string method;
+        std::string uri;
+        char version;
+        std::vector<header> headers;
+        bool ok = request_->parseRequest(data_.elems, method, uri, version, headers);
+        if (ok) {
+            std::string response_buffer = response_->startProcessing(method, document_root_, uri, version);
+            writeHandler(response_buffer);
+        } else {
+            return;
+        }
+    }
+}
+
+
+void Server::writeHandler(std::string& buf) {
+    boost::asio::async_write(
+            socket_,
+            boost::asio::buffer(buf),
+            [this](const boost::system::error_code& error, size_t bytes_transferred) {
+                if (error) {
+                    std::cout << error.message() << " || " << error.value() << " || " << std::endl;
+                }
+            }
+    );
 }
 
 void Server::start_signal_wait() {
@@ -88,3 +173,4 @@ void Server::handle_write(const boost::system::error_code &ec) {
     if (!ec)
         start_read();
 }
+*/

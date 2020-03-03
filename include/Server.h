@@ -7,22 +7,29 @@
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/array.hpp>
-#include <boost/bind.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include "ServerConfigParser.h"
+#include "request.h"
 
 using boost::asio::ip::tcp;
 
 class Server {
 public:
     explicit Server(const ServerConfig& config);
+    ~Server();
+
     void run();
 
 private:
+    void serverListen();
+    void listenHandler(boost::system::error_code error);
+    void startProcessing();
+    void readHandler(boost::system::error_code error, unsigned int bytes_transferred);
+    void writeHandler(std::string& buf);
     void start_signal_wait();
     void handle_signal_wait();
     void start_accept();
@@ -37,6 +44,10 @@ private:
     tcp::acceptor acceptor_;
     tcp::socket socket_;
     boost::array<char, 1024> data_;
+    std::string document_root_;
+    unsigned int cpu_limit_;
+    std::shared_ptr<HTTPRequest> request_;
+    //std::shared_ptr<HTTPResponse> response_;
 };
 
 
