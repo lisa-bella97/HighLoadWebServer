@@ -1,13 +1,15 @@
 #include <thread>
 #include <fstream>
 #include <sstream>
-#include "ServerConfigParser.h"
+#include "ServerConfig.h"
 
-unsigned int ServerConfigParser::cpu_limit_ = std::thread::hardware_concurrency();
-std::string ServerConfigParser::document_root_ = "/var/www/html";
-unsigned int ServerConfigParser::port_ = 80;
 
-ServerConfig ServerConfigParser::parse(const std::string &path) {
+ServerConfig::ServerConfig(unsigned int port) : port_(port),
+                                                cpu_limit_(std::thread::hardware_concurrency()),
+                                                thread_limit_(0) {}
+
+
+void ServerConfig::parse(const std::string &path) {
     std::ifstream config_file(path);
     if (!config_file.is_open()) {
         throw std::runtime_error("cannot open config file");
@@ -21,16 +23,20 @@ ServerConfig ServerConfigParser::parse(const std::string &path) {
 
         if (key == "cpu_limit") {
             cpu_limit_ = std::atoi(value.c_str());
+        } else if (key == "thread_limit") {
+            thread_limit_ = std::atoi(value.c_str());
         } else if (key == "document_root") {
             document_root_ = value;
         }
     }
 
     config_file.close();
-
-    return ServerConfig{cpu_limit_, document_root_, port_};
 }
 
-void ServerConfigParser::setPort(unsigned int port) {
-    port_ = port;
+std::string ServerConfig::getDocumentRoot() {
+    return document_root_;
+}
+
+unsigned int ServerConfig::getPort() {
+    return port_;
 }

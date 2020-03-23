@@ -5,7 +5,8 @@
 #include "boost/filesystem.hpp"
 #include <mutex>
 
-std::string HTTPResponse::startProcessing(std::string &method, std::string& document_root, std::string &uri, char &version) {
+std::string
+HTTPResponse::startProcessing(std::string &method, std::string &document_root, std::string &uri, char &version) {
     std::string response_buffer = "HTTP/1.";
     response_buffer.push_back(version);
     response_buffer.push_back(' ');
@@ -27,7 +28,9 @@ std::string HTTPResponse::startProcessing(std::string &method, std::string& docu
     return response_buffer;
 }
 
-std::string HTTPResponse::processMethod(std::string &method, std::string& document_root, std::string &uri, char &version, std::vector<header>& headers) {
+std::string
+HTTPResponse::processMethod(std::string &method, std::string &document_root, std::string &uri, char &version,
+                            std::vector<header> &headers) {
     std::string full_path = document_root + uri;
 
     size_t last_slash_index = uri.find_last_of('/');
@@ -49,8 +52,8 @@ std::string HTTPResponse::processMethod(std::string &method, std::string& docume
         std::string file_extension = full_path.substr(dot_position + 1, full_path.length() - dot_position);
         std::string content_type = getContentType(file_extension);
 
-        headers.push_back(header {"Content-Type", content_type});
-        headers.push_back(header {"Content-Length", std::to_string(boost::filesystem::file_size(full_path))});
+        headers.push_back(header{"Content-Type", content_type});
+        headers.push_back(header{"Content-Length", std::to_string(boost::filesystem::file_size(full_path))});
 
         uri = full_path;
         return "200 OK";
@@ -65,14 +68,15 @@ std::string HTTPResponse::processUnknownMethod() {
     return "405 Method Not Allowed";
 }
 
-void HTTPResponse::initHeaders(std::vector<header>& headers) {
-    headers.push_back(header {"Server", "gdinx v.1.0.1"});
-    headers.push_back(header {"Date", getDate()});
-    headers.push_back(header {"Connection", "Closed"});
+void HTTPResponse::initHeaders(std::vector<header> &headers) {
+    headers.push_back(header{"Server", "gdinx v.1.0.1"});
+    headers.push_back(header{"Date", getDate()});
+    headers.push_back(header{"Connection", "Closed"});
 }
 
-void HTTPResponse::writeHeaders(std::string& method, std::string& code, std::string& path, std::string& response_buffer, std::vector<header>& headers) {
-    for (auto& header : headers) {
+void HTTPResponse::writeHeaders(std::string &method, std::string &code, std::string &path, std::string &response_buffer,
+                                std::vector<header> &headers) {
+    for (auto &header : headers) {
         response_buffer += header.key + ": " + header.value + "\r\n";
     }
 
@@ -99,12 +103,13 @@ void HTTPResponse::writeHeaders(std::string& method, std::string& code, std::str
 std::string HTTPResponse::getDate() {
     std::time_t timer = std::time(nullptr);
     char buffer_time[MAX_TIME_BUFFER_SIZE];
-    auto time_now = std::strftime(buffer_time, sizeof(buffer_time), "%a, %d %b %Y %H:%M:%S GMT", std::localtime(&timer));
+    auto time_now = std::strftime(buffer_time, sizeof(buffer_time), "%a, %d %b %Y %H:%M:%S GMT",
+                                  std::localtime(&timer));
 
     return std::string(buffer_time, time_now);
 }
 
-std::string HTTPResponse::getContentType(std::string& extension) {
+std::string HTTPResponse::getContentType(std::string &extension) {
     if (extension == "html") return "text/html";
     if (extension == "css") return "text/css";
     if (extension == "js") return "application/javascript";

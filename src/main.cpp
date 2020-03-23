@@ -1,4 +1,4 @@
-#include "server/server.h"
+#include "Server.h"
 
 int main() {
     HTTPConfig cfg_file;
