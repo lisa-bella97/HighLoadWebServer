@@ -26,7 +26,7 @@ git clone https://github.com/init/http-test-suite.git
 ## Нагрузка через ab:
 
 ```
-ab -n 1000 -c 100 localhost/httptest/wikipedia_russia.html
+ab -n 10000 -c 100 localhost/httptest/logo.v2.png
 ```
 
 ## Запуск nginx:
