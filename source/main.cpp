@@ -4,7 +4,7 @@
 
 int main() {
     ServerConfig config;
-    config.parse("../httpd.conf");
+    config.parse("/etc/httpd.conf");
 
     try {
         Server server(&config);
