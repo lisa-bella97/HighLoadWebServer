@@ -11,12 +11,8 @@ Server::Server(ServerConfig *config) :
                         config->getPort()
                 )),
         signal_(io_service_, SIGCHLD),
-        connection_() {
-    document_root_ = config->getDocumentRoot();
-
-    acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-    acceptor_.listen();
-
+        connection_(),
+        document_root_(config->getDocumentRoot()) {
     startSignalWait();
     startAccept();
 }
@@ -49,14 +45,11 @@ void Server::startAccept() {
     connection_.reset(new ServerConnection(io_service_, document_root_));
     acceptor_.async_accept(
             connection_->getSocket(),
-            boost::bind(&Server::handleAccept,
-                        this,
-                        boost::asio::placeholders::error
-            )
+            boost::bind(&Server::handleAccept, this, _1)
     );
 }
 
-void Server::handleAccept(boost::system::error_code ec) {
+void Server::handleAccept(const boost::system::error_code& ec) {
     if (!ec) {
         // Inform the io_service that we are about to fork. The io_service cleans
         // up any internal resources, such as threads, that may interfere with

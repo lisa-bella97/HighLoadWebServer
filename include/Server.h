@@ -17,7 +17,7 @@ public:
 private:
     void startAccept();
 
-    void handleAccept(boost::system::error_code ec);
+    void handleAccept(const boost::system::error_code& ec);
 
     void startSignalWait();
 
