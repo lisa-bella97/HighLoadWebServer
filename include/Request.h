@@ -2,22 +2,24 @@
 #define REQUEST_H
 
 #include "Header.h"
-#include "boost/asio.hpp"
-#include <iostream>
+#include <vector>
 
-class Request : public std::enable_shared_from_this<Request> {
+class Request {
 public:
-    static bool parseRequest(char[], std::string &, std::string &, char &, std::vector<Header> &);
+    static bool parseRequest(const char *request, std::string &method, std::string &uri, char &version,
+                             std::vector<Header> &headers);
 
-    static bool isLetter(char &);
+private:
 
-    static bool isDigit(char &);
+    static bool isLetter(char c);
 
-    static bool isAllowedSymbol(char &);
+    static bool isDigit(char c);
 
-    static bool isHttpSlash(const char *, size_t &);
+    static bool isAllowedSymbol(char c);
 
-    static char decodeChar(const char *, size_t &);
+    static bool isHttpSlash(const char *request, size_t i);
+
+    static char decodeChar(const char *request, size_t i);
 };
 
 #endif //REQUEST_H

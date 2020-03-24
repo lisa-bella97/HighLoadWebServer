@@ -1,7 +1,6 @@
 #include "Request.h"
-#include <regex>
-#include <chrono>
-#include <thread>
+#include <sstream>
+#include <cstring>
 
 #define STAGE_METHOD 0
 #define STAGE_SLASH 1
@@ -14,7 +13,7 @@
 #define STAGE_HEADER_DELIM 8
 #define STAGE_HEADER_VALUE 9
 
-bool Request::parseRequest(char *request, std::string &method, std::string &uri, char &version,
+bool Request::parseRequest(const char *request, std::string &method, std::string &uri, char &version,
                            std::vector<Header> &headers) {
     size_t i = STAGE_METHOD, j = 0; // go to method phase
     Header tmp_struct{"", ""};
@@ -148,19 +147,19 @@ bool Request::parseRequest(char *request, std::string &method, std::string &uri,
     return true;
 }
 
-bool Request::isLetter(char &c) {
+bool Request::isLetter(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-bool Request::isDigit(char &c) {
+bool Request::isDigit(char c) {
     return (c >= '0' && c <= '9');
 }
 
-bool Request::isAllowedSymbol(char &c) {
+bool Request::isAllowedSymbol(char c) {
     return (c == '.' || c == '/' || c == '?' || c == '&' || c == '=' || c == '_' || c == '-');
 }
 
-bool Request::isHttpSlash(const char *request, size_t &i) {
+bool Request::isHttpSlash(const char *request, size_t i) {
     return (
             request[i] == 'H' &&
             request[i + 1] == 'T' &&
@@ -170,7 +169,7 @@ bool Request::isHttpSlash(const char *request, size_t &i) {
     );
 }
 
-char Request::decodeChar(const char *request, size_t &i) {
+char Request::decodeChar(const char *request, size_t i) {
     if (request[i] == '%') {
         char str[3];
         memcpy(str, &request[i + 1], 2);

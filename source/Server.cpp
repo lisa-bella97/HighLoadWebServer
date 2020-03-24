@@ -1,6 +1,6 @@
 #include "Server.h"
 #include "boost/bind.hpp"
-#include <thread>
+#include <iostream>
 #include <wait.h>
 
 Server::Server(ServerConfig *config) :
@@ -49,7 +49,7 @@ void Server::startAccept() {
     );
 }
 
-void Server::handleAccept(const boost::system::error_code& ec) {
+void Server::handleAccept(const boost::system::error_code &ec) {
     if (!ec) {
         // Inform the io_service that we are about to fork. The io_service cleans
         // up any internal resources, such as threads, that may interfere with

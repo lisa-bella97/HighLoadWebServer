@@ -4,9 +4,8 @@
 #include "ServerConfig.h"
 #include "ServerConnection.h"
 #include "boost/asio.hpp"
-#include "boost/thread.hpp"
 
-class Server : public std::enable_shared_from_this<Server> {
+class Server {
 public:
     explicit Server(ServerConfig *config);
 

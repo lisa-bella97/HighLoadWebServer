@@ -3,8 +3,8 @@
 
 #include "Request.h"
 #include "Response.h"
-#include "boost/asio.hpp"
 #include "Header.h"
+#include "boost/asio.hpp"
 #include <boost/array.hpp>
 
 class ServerConnection {
@@ -22,15 +22,9 @@ private:
 
     boost::asio::ip::tcp::socket socket_;
     boost::array<char, 1024> buffer_;
-    std::shared_ptr<Request> request_;
-    std::shared_ptr<Response> response_;
 
     std::string document_root_;
-    std::string method_;
-    std::string uri_;
-    std::string response_buffer;
-    char version_;
-    std::vector<Header> headers_;
+    std::string response_buffer_;
 };
 
 #endif //SERVER_CONNECTION_H

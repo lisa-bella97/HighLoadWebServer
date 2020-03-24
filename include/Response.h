@@ -2,27 +2,28 @@
 #define RESPONSE_H
 
 #include "Header.h"
-#include "boost/asio.hpp"
 #include <vector>
-#include <iostream>
-#include <unordered_map>
 
-class Response : public std::enable_shared_from_this<Response> {
+class Response {
 public:
-    static std::string startProcessing(std::string &, std::string &, std::string &, char &);
+    static std::string
+    startProcessing(const std::string &method, const std::string &document_root, std::string &uri, char version);
 
-    static std::string processMethod(std::string &, std::string &, std::string &, char &, std::vector<Header> &headers);
+private:
+    static std::string processMethod(const std::string &method, const std::string &document_root, std::string &uri,
+                                     std::vector<Header> &headers);
 
     static std::string processUnknownMethod();
 
-    static void initHeaders(std::vector<Header> &);
+    static void initHeaders(std::vector<Header> &headers);
 
-    static void writeHeaders(std::string &, std::string &, std::string &, std::string &, std::vector<Header> &);
+    static void writeHeaders(const std::string &method, const std::string &code, const std::string &path,
+                             std::string &response_buffer,
+                             const std::vector<Header> &headers);
 
-public:
     static std::string getDate();
 
-    static std::string getContentType(std::string &);
+    static std::string getContentType(const std::string &extension);
 };
 
 #endif //RESPONSE_H

@@ -5,7 +5,7 @@
 #define MAX_FILE_BUFFER_SIZE 1024
 #define MAX_TIME_BUFFER_SIZE 256
 
-std::string Response::startProcessing(std::string &method, std::string &document_root, std::string &uri, char &version) {
+std::string Response::startProcessing(const std::string &method, const std::string &document_root, std::string &uri, char version) {
     std::string response_buffer = "HTTP/1.";
     response_buffer.push_back(version);
     response_buffer.push_back(' ');
@@ -16,7 +16,7 @@ std::string Response::startProcessing(std::string &method, std::string &document
     std::string response_code;
 
     if (method == "GET" || method == "HEAD") {
-        response_code = processMethod(method, document_root, uri, version, headers);
+        response_code = processMethod(method, document_root, uri, headers);
     } else {
         response_code = processUnknownMethod();
     }
@@ -27,7 +27,7 @@ std::string Response::startProcessing(std::string &method, std::string &document
     return response_buffer;
 }
 
-std::string Response::processMethod(std::string &method, std::string &document_root, std::string &uri, char &version,
+std::string Response::processMethod(const std::string &method, const std::string &document_root, std::string &uri,
                                     std::vector<Header> &headers) {
     std::string full_path = document_root + uri;
 
@@ -72,8 +72,8 @@ void Response::initHeaders(std::vector<Header> &headers) {
     headers.push_back(Header{"Connection", "Closed"});
 }
 
-void Response::writeHeaders(std::string &method, std::string &code, std::string &path, std::string &response_buffer,
-                            std::vector<Header> &headers) {
+void Response::writeHeaders(const std::string &method, const std::string &code, const std::string &path, std::string &response_buffer,
+                            const std::vector<Header> &headers) {
     for (auto &header : headers) {
         response_buffer += header.key + ": " + header.value + "\r\n";
     }
@@ -107,7 +107,7 @@ std::string Response::getDate() {
     return std::string(buffer_time, time_now);
 }
 
-std::string Response::getContentType(std::string &extension) {
+std::string Response::getContentType(const std::string &extension) {
     if (extension == "html") return "text/html";
     if (extension == "css") return "text/css";
     if (extension == "js") return "application/javascript";
